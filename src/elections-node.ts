@@ -1,5 +1,5 @@
 import {  Mina, Party, UInt64, PrivateKey, Bool, PublicKey, Field } from 'snarkyjs';
-import { Voting } from './voting-snapp'
+import { Voting } from './voting-snap'
 import { MerkleTree } from './merkle-tree'
 
 type Transaction = ReturnType<typeof Mina.transaction>;
@@ -13,7 +13,7 @@ type VotingCard = Field;
 
   public instance : MinaInstance;
   public snappAddress? : PublicKey;
-  public whitelistedVotingCards: VotingCard[]
+  public whitelistedVotingCards: VotingCard[] = []
 
   constructor() {
     const Local = Mina.LocalBlockchain();
