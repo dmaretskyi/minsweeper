@@ -1,9 +1,15 @@
 import { Field } from "snarkyjs"
-import { MerkleTree } from './merkle-tree'
+import { MerkleTree, MerkleNode } from './merkle-tree'
+import { expect } from 'chai'
+
 describe('Merkle Tree', () => {
-    it('builds correct tree', () => {
-        const fields = [new Field(0), new Field(1), new Field(2)]
-        // const tree = new MerkleTree(fields)
-        // console.log(tree.nodes);
+    const validatePath = (tree: MerkleTree, leaf: MerkleNode) => {
+        
+    }
+    it.only('builds correct tree', () => {
+        const fields = [Field(0), Field(1), Field(2)]
+        const tree = new MerkleTree(fields)
+        console.log(tree.validate(Field(0)));
+        
     })
 })

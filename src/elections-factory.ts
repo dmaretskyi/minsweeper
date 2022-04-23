@@ -10,22 +10,9 @@ type VotingCard = Field;
 /**
  * Wraps zkapp contract running on a local simulator.
  */
- export class ElectionsNode {
+ export class ElectionsFactory {
 
-  public instance : MinaInstance;
-
-  public snappAddress? : PublicKey;
   public whitelistedVotingCards: VotingCard[] = []
-
-  constructor() {
-    const Local = Mina.LocalBlockchain();
-    Mina.setActiveInstance(Local);
-    this.instance = Local;
-  }
-
-  getTestAccounts(){
-    return this.instance.testAccounts;
-  }
 
   addTransaction(tx: Transaction){
     tx.send();
@@ -39,19 +26,14 @@ type VotingCard = Field;
     return new MerkleTree(this.whitelistedVotingCards);
   }
 
-  async getState() {
-    const state = (await Mina.getAccount(this.snappAddress!)).zkapp.appState;
-    const [forCounter, againstCounter, nullifierRoot, votingCardRoot, lastNullifier] = state;
-
-    return {forCounter, againstCounter, nullifierRoot, votingCardRoot, lastNullifier};
-  }
-
-  createDeployTransaction(deployerSecretKey: PrivateKey, args: any) : {deployTransaction: Transaction, snappAddress: PublicKey} {
+  generateTransaction(deployerSecretKey: PrivateKey, args: any) : {deployTransaction: Transaction, snappAddress: PublicKey} {
     const snappPrivateKey = PrivateKey.random();
     const snappAddress = snappPrivateKey.toPublicKey();
     const initialBalance = UInt64.fromNumber(1000000);
 
-    const votingCardRoot = 
+    const votingCardTree = this.__buildVotingCardTree() 
+    const votingCardRoot = votingCardTree.getRoot()
+
 
     let deployTransaction = Mina.transaction(deployerSecretKey, () => {
       const snapp = new Voting(snappAddress);
@@ -60,12 +42,10 @@ type VotingCard = Field;
       snapp.deploy({ zkappKey: snappPrivateKey, ...args });
       snapp.balance.addInPlace(initialBalance);
     });
+    
     return {deployTransaction, snappAddress};
   }
 
-  setAddress(snappAddress: PublicKey){
-    this.snappAddress = snappAddress;
-  }
 
   // async vote(vote: boolean) {
   //   let tx = Mina.transaction(this._voter, () => {
