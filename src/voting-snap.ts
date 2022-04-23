@@ -71,18 +71,17 @@ export class Voting extends SmartContract {
   ) {
     // votingCard = hash(nullifier, secret)
     const votingCard = Poseidon.hash([nullifier, secret]);
-    const {unusedNullifier, usedNullifier} = getNullifierData(nullifier);
 
     // verify votingCardPath
     this.votingCardRoot.assertEquals(votingCardPath.calculateRoot(votingCard));
 
     // verify nullifierPath
 
-    this.nullifierRoot.assertEquals(nullifierPath.calculateRoot(unusedNullifier));
+    this.nullifierRoot.assertEquals(nullifierPath.calculateRoot(Field(0)));
 
     // nullify, i.e. calculate new nullifier tree
 
-    this.nullifierRoot.set(nullifierPath.calculateRoot(usedNullifier));
+    this.nullifierRoot.set(nullifierPath.calculateRoot(Field(1)));
 
     // publish nullifier so that others can update merklePath
 

@@ -23,7 +23,9 @@ type VotingCard = Field;
   }
 
   __buildVotingCardTree(): MerkleTree{
-    return new MerkleTree(this.whitelistedVotingCards);
+    const result = new MerkleTree(256);
+    result.fill(this.whitelistedVotingCards);
+    return result;
   }
 
   generateTransaction(deployerSecretKey: PrivateKey, args: any) : {deployTransaction: Transaction, snappAddress: PublicKey} {
@@ -31,18 +33,19 @@ type VotingCard = Field;
     const snappAddress = snappPrivateKey.toPublicKey();
     const initialBalance = UInt64.fromNumber(1000000);
 
-    const votingCardTree = this.__buildVotingCardTree() 
+    const votingCardTree = this.__buildVotingCardTree()
     const votingCardRoot = votingCardTree.getRoot()
 
+    const nullifierRoot = new MerkleTree(256);
 
     let deployTransaction = Mina.transaction(deployerSecretKey, () => {
       const snapp = new Voting(snappAddress);
       const p = Party.createSigned(deployerSecretKey, {isSameAsFeePayer: true});
       p.balance.subInPlace(initialBalance);
-      snapp.deploy({ zkappKey: snappPrivateKey, ...args });
+      snapp.deploy({ zkappKey: snappPrivateKey, votingCardRoot, nullifierRoot, ...args });
       snapp.balance.addInPlace(initialBalance);
     });
-    
+  
     return {deployTransaction, snappAddress};
   }
 
