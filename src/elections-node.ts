@@ -1,5 +1,5 @@
 import {  Mina, Party, UInt64, PrivateKey, Bool, PublicKey, } from 'snarkyjs';
-import { Voting } from './voting-snapp'
+import { Voting } from './voting-snap'
 
 type Transaction = ReturnType<typeof Mina.transaction>;
 type MinaInstance = ReturnType<typeof Mina.LocalBlockchain>;
