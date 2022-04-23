@@ -1,8 +1,20 @@
 import { Field, isReady, shutdown, Mina, Party, UInt64, PrivateKey } from 'snarkyjs';
+import { ElectionsNode } from './elections-node';
 
-describe('aa', () => {
-  it('aa', () => {
-    expect(1).toBe(1)
+describe('elections-node', () => {
+  it('deploy and send transaction', () => {
+    const electionsNode = new ElectionsNode();
+    const testAccounts = electionsNode.getTestAccounts();
+  
+    const nullifierRoot = Field(2137);
+    const votingCardRoot = Field(420);
+
+    const {deployTransaction, snappAddress } = electionsNode.createDeployTransaction(testAccounts[0].privateKey, {nullifierRoot, votingCardRoot});
+    electionsNode.addTransaction(deployTransaction);
+    electionsNode.setAddress(snappAddress);
+
+    //@ts-ignore
+    // console.log(deployTransaction.toJSON());
   })
 })
 
